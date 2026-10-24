@@ -9,7 +9,7 @@ import resource
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-# Búsqueda dinámica de la raíz del proyecto (cbn_core)
+# Dynamically locate the project root (cbn_core)
 current_dir = Path(__file__).resolve().parent
 root_dir = current_dir
 while not (root_dir / "cbn_python").exists() and root_dir.parent != root_dir:
@@ -26,7 +26,7 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-# Definir la ruta global al binario de C++ (CPP_BINARY)
+# Define the global path to the C++ binary (CPP_BINARY)
 CPP_BINARY = root_dir / "cbn_cpp" / "build" / "scientific_benchmarking"
 
 def validate_config(config: Dict[str, Any]) -> bool:
@@ -39,11 +39,11 @@ def validate_config(config: Dict[str, Any]) -> bool:
     return True
 
 def execute_cpp_profiles(topo_path: Path, exp_dir: Path, v_topology: int = 2, n_networks: int = 4, n_vars: int = 5) -> Dict[str, Tuple[float, float, float, float, float, float, float, float, int, int, int]]:
-    """Ejecuta C++ una vez y extrae las métricas de sus tres estrategias."""
+    """Run C++ once and extract metrics for its three strategies."""
     if not CPP_BINARY.exists():
         raise FileNotFoundError(f"C++ binary not found at: {CPP_BINARY}. Please build it first using 'make build-cpp'.")
 
-    # Comando de ejecución C++
+    # C++ execution command
     cmd = [
         str(CPP_BINARY),
         "--samples", "1",
@@ -54,13 +54,13 @@ def execute_cpp_profiles(topo_path: Path, exp_dir: Path, v_topology: int = 2, n_
         "--dir", str(exp_dir)
     ]
 
-    logger.info(f"Invocando C++ con comando: {' '.join(cmd)}")
+    logger.info(f"Invoking C++ with command: {' '.join(cmd)}")
     result = subprocess.run(cmd, capture_output=True, text=True, check=False)
     
-    # Capturar el pico máximo de RAM del proceso C++ en Linux
+    # Capture the C++ process's peak RAM usage on Linux
     rusage_children = resource.getrusage(resource.RUSAGE_CHILDREN)
     max_rss_mb = rusage_children.ru_maxrss / 1024.0
-    logger.info(f"[C++ Engine] Memoria Pico (Max RSS del subproceso): {max_rss_mb:.2f} MB")
+    logger.info(f"[C++ Engine] Peak memory (subprocess max RSS): {max_rss_mb:.2f} MB")
 
     if result.returncode != 0:
         raise RuntimeError(f"C++ engine crashed with return code {result.returncode}.\nStderr: {result.stderr}\nStdout: {result.stdout}")
@@ -92,7 +92,7 @@ def execute_cpp_profiles(topo_path: Path, exp_dir: Path, v_topology: int = 2, n_
         t_p3 = perf_data.get("step_3_ms", 0.0) / 1000.0
         total_t = perf_data.get("total_ms", 0.0) / 1000.0
 
-        # Extraer métricas de memoria del heap de C++
+        # Extract C++ heap memory metrics
         mem_p1_kb = perf_data.get("mem_p1_kb", 0.0)
         mem_p2_kb = perf_data.get("mem_p2_kb", 0.0)
         mem_p3_kb = perf_data.get("mem_p3_kb", 0.0)
@@ -109,7 +109,7 @@ def execute_cpp_profiles(topo_path: Path, exp_dir: Path, v_topology: int = 2, n_
     return metrics
 
 def run_pipeline(config: Dict[str, Any], sample_id: int, experiment_name: str, output_base: Path, csv_path: Path, fieldnames: List[str]):
-    """Genera la topología base y la procesa EXCLUSIVAMENTE con C++."""
+    """Generate the base topology and process it using only C++."""
     exp_dir = output_base / "data" / experiment_name
     exp_dir.mkdir(parents=True, exist_ok=True)
     
@@ -117,13 +117,13 @@ def run_pipeline(config: Dict[str, Any], sample_id: int, experiment_name: str, o
     v_topology = config.get("v_topology", 2)
     n_var_network = config.get("n_var_network", 5)
 
-    # 1. Generar la "Red Maestra" y guardarla
-    logger.info(f"[{experiment_name}] Generando topología base...")
+    # 1. Generate and save the master network
+    logger.info(f"[{experiment_name}] Generating base topology...")
     cbn_base = CBN.generate_from_config(config)
     topo_path = exp_dir / "topology.json"
     cbn_base.to_json(str(topo_path))
 
-    # 2. Ejecutar exclusivamente el motor C++
+    # 2. Run only the C++ engine
     try:
         cpp_metrics = execute_cpp_profiles(topo_path, exp_dir, v_topology=v_topology, n_networks=n_nets, n_vars=n_var_network)
         for profile, values in cpp_metrics.items():
@@ -137,9 +137,9 @@ def run_pipeline(config: Dict[str, Any], sample_id: int, experiment_name: str, o
             with open(csv_path, 'a', newline='') as csvfile:
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writerow({k: (f"{v:.6f}" if isinstance(v, float) else v) for k, v in row.items()})
-            logger.info(f"[{experiment_name}] Perfil {profile.upper()} completado y persistido en CSV.")
+            logger.info(f"[{experiment_name}] {profile.upper()} profile completed and saved to CSV.")
     except Exception as e:
-        logger.error(f"[{experiment_name}] Error en perfiles C++: {e}")
+        logger.error(f"[{experiment_name}] Error in C++ profiles: {e}")
         logger.debug(traceback.format_exc())
 
 def main():
@@ -168,11 +168,11 @@ def main():
         with open(csv_path, 'w', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-        logger.info(f"Creado archivo CSV nuevo en: {csv_path}")
+        logger.info(f"Created new CSV file at: {csv_path}")
     else:
-        logger.info(f"Usando archivo CSV existente en: {csv_path} (modo append)")
+        logger.info(f"Using existing CSV file at: {csv_path} (append mode)")
 
-    logger.info(f"Iniciando evaluación EXCLUSIVA C++ para {len(configs)} configuraciones...")
+    logger.info(f"Starting C++-only evaluation for {len(configs)} configurations...")
 
     for i, cfg in enumerate(configs):
         if not validate_config(cfg):
@@ -182,11 +182,11 @@ def main():
         exp_name = cfg.get("experiment_name", f"exp_{config_path.stem}_{sample_id}")
         
         logger.info(f"\n=========================================")
-        logger.info(f"Procesando muestra {sample_id}/{len(configs)}: {exp_name}")
+        logger.info(f"Processing sample {sample_id}/{len(configs)}: {exp_name}")
         logger.info(f"=========================================")
         
         run_pipeline(cfg, sample_id, exp_name, output_base, csv_path, fieldnames)
-        logger.info(f"==> Muestra {sample_id}/{len(configs)} finalizada.")
+        logger.info(f"==> Sample {sample_id}/{len(configs)} completed.")
 
 if __name__ == "__main__":
     main()

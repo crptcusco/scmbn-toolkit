@@ -2,7 +2,7 @@ import json
 import os
 
 def get_neurogenic_logic():
-    """Forma Normal Conjunta de las ecuaciones de transición biológicas."""
+    """Conjunctive normal form of the biological transition equations."""
     return [
         {"index": 1, "cnf": [[1, -14], [-1, 14]]},
         {"index": 2, "cnf": [[-2, 1], [-2, 12], [-2, -13], [-1, -12, 13, 2]]},
@@ -31,7 +31,7 @@ def main():
         "directed_edges": []
     }
 
-    # 1. Crear las 7 células (Módulos) del Cluster Proneural
+    # 1. Create the 7 cells (modules) in the proneural cluster
     for i in range(1, 8):
         topology["local_networks"].append({
             "index": i,
@@ -40,16 +40,16 @@ def main():
             "logic": get_neurogenic_logic()
         })
 
-    # 2. Acoplamientos (6 células vecinas hacia la célula central 1)
+    # 2. Couple the 6 neighboring cells to the central cell 1
     edge_idx = 1
     for neighbor_id in range(2, 8): 
         topology["directed_edges"].append({
             "index": edge_idx,
             "source": neighbor_id,
             "target": 1,
-            "signal_var": 14,       # La variable que recibe el acoplamiento
+            "signal_var": 14,       # Variable that receives the coupling
             "output_vars": [13],    # Exporta Delta
-            "function": "Threshold", # <-- ¡Restaurado a su valor correcto gracias a Jules!
+            "function": "Threshold", # Restored to its correct value
             "true_table": {
                 "0": "0",
                 "1": "1"
@@ -65,7 +65,7 @@ def main():
     
     with open(output_path, "w") as f:
         json.dump(topology, f, indent=4)
-        print(f"✅ Topología de Drosophila restaurada con 'Threshold' en:\n{output_path}")
+        print(f"✅ Drosophila topology with 'Threshold' restored at:\n{output_path}")
 
 if __name__ == "__main__":
     main()

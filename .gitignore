@@ -1,1 +1,4 @@
 /data_drosophila_update/results/cbn_sample_1_dynamics.json
+
+# VS Code machine-specific settings
+.vscode/settings.json

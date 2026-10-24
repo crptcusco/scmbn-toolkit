@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-# Configuración
+# Configuration
 N_SAMPLES = 100
 TOPOLOGIES = [1, 2, 3, 7, 9]  # complete, linear, cycle, dm, sf
 NETWORKS_RANGE = (3, 6)

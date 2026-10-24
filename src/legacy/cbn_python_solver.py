@@ -20,9 +20,9 @@ def run_audit(input_path: str):
         return
 
     results = []
-    detailed_logs = []  # Búfer en memoria para evitar que Numba/Hilos pisen los prints
+    detailed_logs = []  # Buffer results in memory to prevent Numba/threads from interleaving output
 
-    # 1. Attractor Finding Methods (Ya sin fuerza bruta)
+    # 1. Attractor-finding methods (excluding brute force)
     attractor_methods = [
         "find_attractors_duvrova",
         "find_attractors_brute_force",
@@ -93,7 +93,7 @@ def run_audit(input_path: str):
                 0,
             )
 
-    # --- EJECUCIÓN SILENCIOSA (Acumulando datos) ---
+    # --- SILENT EXECUTION (collecting data) ---
 
     # Audit Attractor Methods
     for m in attractor_methods:
@@ -125,10 +125,10 @@ def run_audit(input_path: str):
         results.append((m, status, msg, count))
         detailed_logs.append((f"[{status:4}] {m:45} -> {msg}", "FIELDS"))
 
-    # --- IMPRESIÓN DEL REPORTE UNIFICADO (Al final de todo) ---
+    # --- PRINT THE UNIFIED REPORT (after all methods finish) ---
 
     print("\n" + "=" * 70, flush=True)
-    print("📊 REPORTE DE AUDITORÍA DE MÉTODOS DEL SOLVER - CBN_CORE", flush=True)
+    print("📊 SOLVER METHOD AUDIT REPORT - CBN_CORE", flush=True)
     print("=" * 70, flush=True)
 
     current_section = "ATTRACTORS"
@@ -139,7 +139,7 @@ def run_audit(input_path: str):
         print(log_line, flush=True)
 
     print("=" * 70, flush=True)
-    print("🔍 VERIFICACIÓN DE PARIDAD CIENTÍFICA", flush=True)
+    print("🔍 SCIENTIFIC PARITY CHECK", flush=True)
     print("=" * 70, flush=True)
 
     def check_parity(group_name, methods_in_group):
@@ -199,18 +199,18 @@ def main():
         print(f"[Error] Input file {args.input} not found.")
         sys.exit(1)
 
-    # ... (después de cargar cbn)
+    # ... (after loading cbn)
     cbn = CBN.from_json(args.input)
 
-    # INICIALIZAR VARIABLES PARA EVITAR EL NAMEERROR
+    # Initialize variables to avoid a NameError
     s2_ms = 0
     s3_ms = 0
     start_time = time.perf_counter()
 
-    # Búsqueda de atractores
+    # Find attractors
     cbn.find_attractors_duvrova()
 
-    # Búsqueda de pares
+    # Find compatible pairs
     s2_start = time.perf_counter()
     cbn.find_compatible_pairs()
 
@@ -221,16 +221,16 @@ def main():
 
     s2_ms = (time.perf_counter() - s2_start) * 1000
 
-    # Paso de campos
+    # Attractor field step
     if len(cbn.l_directed_edges) > 0:
         s3_start = time.perf_counter()
         cbn.mount_stable_attractor_fields()
         s3_ms = (time.perf_counter() - s3_start) * 1000
 
-    # CÁLCULO FINAL DE TIEMPO
+    # FINAL TIMING
     total_ms = (time.perf_counter() - start_time) * 1000
 
-    # ... (ahora sí puedes usar total_ms en output_object)
+    # ... (total_ms can now be used in output_object)
 
     # Metadata
     topo_type = "N/A"

@@ -8,7 +8,7 @@ import logging
 from pathlib import Path
 
 # ======================================================================
-# CONFIGURACIÓN DEL EXPERIMENTO
+# EXPERIMENT CONFIGURATION
 # ======================================================================
 N_SAMPLES = 5  
 
@@ -24,20 +24,20 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 
 def run_command(cmd):
     try:
-        # Añadimos check=False para gestionar el error manualmente
+        # Use check=False to handle errors manually
         result = subprocess.run(cmd, capture_output=True, text=True, check=False)
         
         if result.returncode != 0:
-            # Capturamos el error específico del binario
+            # Capture the specific binary error
             error_msg = f"Code {result.returncode}: {result.stderr.strip()}"
             return False, error_msg
             
         return True, result.stdout.strip()
         
     except FileNotFoundError:
-        return False, "Binario de C++ no encontrado en la ruta especificada."
+        return False, "C++ binary not found at the specified path."
     except Exception as e:
-        return False, f"Error inesperado en la ejecución: {str(e)}"
+        return False, f"Unexpected execution error: {str(e)}"
 
 def compare_dynamics(py_root, cpp_root):
     def get_canonical_fields(root_data, label):
@@ -54,7 +54,7 @@ def compare_dynamics(py_root, cpp_root):
                 canonical.append(tuple(sorted(indices)))
         
         res = sorted(canonical)
-        print(f"DEBUG: {label} fields -> {res}") # <-- ESTA LÍNEA ES CLAVE
+        print(f"DEBUG: {label} fields -> {res}")
         return res
 
     py_fields = get_canonical_fields(py_root, "PYTHON")
@@ -64,9 +64,9 @@ def compare_dynamics(py_root, cpp_root):
 
 def main():
     parser = argparse.ArgumentParser(description="CBN Hybrid Benchmark Orchestrator")
-    parser.add_argument("--topology", type=int, default=2, help="ID de la topologia (ej. 4 para Lineal)")
-    parser.add_argument("--networks", type=int, default=6, help="Numero de redes locales")
-    parser.add_argument("--vars", type=int, default=5, help="Variables por red")
+    parser.add_argument("--topology", type=int, default=2, help="Topology ID (e.g. 4 for a path)")
+    parser.add_argument("--networks", type=int, default=6, help="Number of local networks")
+    parser.add_argument("--vars", type=int, default=5, help="Variables per network")
     args = parser.parse_args()
 
     print("=== CBN HYBRID BENCHMARK ORCHESTRATOR ===")
@@ -123,7 +123,7 @@ def main():
                 "--input", str(topo_file),
                 "--dir", str(OUTPUT_DIR)
             ]
-            print(f"[DEBUG] Ejecutando C++ con input: {cmd[cmd.index('--input') + 1]}")
+            print(f"[DEBUG] Running C++ with input: {cmd[cmd.index('--input') + 1]}")
             success, out = run_command([
                 str(CPP_BINARY),
                 "--samples", "1",
@@ -136,8 +136,8 @@ def main():
                 writer.writerow({"sample_id": i, "topology": args.topology, "status": "CPP_CRASH"})
                 continue
 
-            # Buscar CUALQUIER archivo que C++ haya generado que contenga 'dynamics'
-            # para evitar el fallo por nombre rígido
+            # Find any C++-generated file containing 'dynamics' to avoid relying
+            # on a fixed filename.
             cpp_generated_files = list(OUTPUT_DIR.glob("*dynamics*.json"))
             cpp_gen_file = None
             
@@ -149,8 +149,8 @@ def main():
             if cpp_gen_file and cpp_gen_file.exists():
                 cpp_gen_file.replace(cpp_dyn_file)
             else:
-                print(f"[Error] El C++ terminó pero no se encontró un archivo JSON de salida reconocible.")
-                print(f"Salida de consola del C++:\n{out}")
+                print("[Error] C++ finished, but no recognizable JSON output file was found.")
+                print(f"C++ console output:\n{out}")
                 break
 
             with open(cpp_dyn_file) as f:

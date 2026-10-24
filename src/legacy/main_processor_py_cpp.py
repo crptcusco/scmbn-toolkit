@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple
 import resource
 
-# Búsqueda dinámica de la raíz del proyecto (cbn_core)
+# Dynamically locate the project root (cbn_core)
 
 current_dir = Path(__file__).resolve().parent
 
@@ -48,7 +48,7 @@ logger = logging.getLogger(__name__)
 
 
 
-# Definir la ruta global al binario de C++ (CPP_BINARY)
+# Define the global path to the C++ binary (CPP_BINARY)
 
 CPP_BINARY = root_dir / "cbn_cpp" / "build" / "scientific_benchmarking"
 
@@ -74,7 +74,7 @@ def validate_config(config: Dict[str, Any]) -> bool:
 
 def load_identical_cbn(topology_path: Path) -> CBN:
 
-    """Helper para cargar una CBN limpia desde el JSON y evitar contaminación de caché."""
+    """Load a clean CBN from JSON to avoid cache contamination."""
 
     if hasattr(CBN, 'from_json'):
 
@@ -89,11 +89,11 @@ def load_identical_cbn(topology_path: Path) -> CBN:
         return CBN(str(topology_path))
 
 def execute_python_profile(cbn: CBN, profile: str) -> Tuple[float, float, float, float, float, float, float, float, int, int, int]:
-    """Ejecuta los métodos exactos de Python correspondientes al perfil y retorna sus métricas, incluyendo log de memoria."""
+    """Run the Python methods for a profile and return their metrics, including memory usage."""
     t_p1 = t_p2 = t_p3 = 0.0
     peak1 = peak2 = peak3 = 0.0
 
-    logger.info(f"--- Iniciando perfilado de memoria tracemalloc para: {profile} ---")
+    logger.info(f"--- Starting tracemalloc memory profiling for: {profile} ---")
     
     if profile == "seq":
         tracemalloc.start()
@@ -102,7 +102,7 @@ def execute_python_profile(cbn: CBN, profile: str) -> Tuple[float, float, float,
         t_p1 = time.perf_counter() - t0
         current, peak1 = tracemalloc.get_traced_memory()
         tracemalloc.stop()
-        logger.info(f"[{profile} - P1] find_attractors_duvrova -> Memoria Pico: {peak1 / 10**6:.2f} MB")
+        logger.info(f"[{profile} - P1] find_attractors_duvrova -> Peak memory: {peak1 / 10**6:.2f} MB")
 
         tracemalloc.start()
         t0 = time.perf_counter()
@@ -110,7 +110,7 @@ def execute_python_profile(cbn: CBN, profile: str) -> Tuple[float, float, float,
         t_p2 = time.perf_counter() - t0
         current, peak2 = tracemalloc.get_traced_memory()
         tracemalloc.stop()
-        logger.info(f"[{profile} - P2] find_compatible_pairs -> Memoria Pico: {peak2 / 10**6:.2f} MB")
+        logger.info(f"[{profile} - P2] find_compatible_pairs -> Peak memory: {peak2 / 10**6:.2f} MB")
 
         tracemalloc.start()
         t0 = time.perf_counter()
@@ -118,7 +118,7 @@ def execute_python_profile(cbn: CBN, profile: str) -> Tuple[float, float, float,
         t_p3 = time.perf_counter() - t0
         current, peak3 = tracemalloc.get_traced_memory()
         tracemalloc.stop()
-        logger.info(f"[{profile} - P3] mount_stable_attractor_fields -> Memoria Pico: {peak3 / 10**6:.2f} MB")
+        logger.info(f"[{profile} - P3] mount_stable_attractor_fields -> Peak memory: {peak3 / 10**6:.2f} MB")
 
     elif profile == "par":
         tracemalloc.start()
@@ -127,7 +127,7 @@ def execute_python_profile(cbn: CBN, profile: str) -> Tuple[float, float, float,
         t_p1 = time.perf_counter() - t0
         current, peak1 = tracemalloc.get_traced_memory()
         tracemalloc.stop()
-        logger.info(f"[{profile} - P1] find_local_attractors_parallel -> Memoria Pico: {peak1 / 10**6:.2f} MB")
+        logger.info(f"[{profile} - P1] find_local_attractors_parallel -> Peak memory: {peak1 / 10**6:.2f} MB")
 
         tracemalloc.start()
         t0 = time.perf_counter()
@@ -135,7 +135,7 @@ def execute_python_profile(cbn: CBN, profile: str) -> Tuple[float, float, float,
         t_p2 = time.perf_counter() - t0
         current, peak2 = tracemalloc.get_traced_memory()
         tracemalloc.stop()
-        logger.info(f"[{profile} - P2] find_compatible_pairs_parallel -> Memoria Pico: {peak2 / 10**6:.2f} MB")
+        logger.info(f"[{profile} - P2] find_compatible_pairs_parallel -> Peak memory: {peak2 / 10**6:.2f} MB")
 
         tracemalloc.start()
         t0 = time.perf_counter()
@@ -143,7 +143,7 @@ def execute_python_profile(cbn: CBN, profile: str) -> Tuple[float, float, float,
         t_p3 = time.perf_counter() - t0
         current, peak3 = tracemalloc.get_traced_memory()
         tracemalloc.stop()
-        logger.info(f"[{profile} - P3] mount_stable_attractor_fields_parallel -> Memoria Pico: {peak3 / 10**6:.2f} MB")
+        logger.info(f"[{profile} - P3] mount_stable_attractor_fields_parallel -> Peak memory: {peak3 / 10**6:.2f} MB")
 
     elif profile == "weights":
         tracemalloc.start()
@@ -152,7 +152,7 @@ def execute_python_profile(cbn: CBN, profile: str) -> Tuple[float, float, float,
         t_p1 = time.perf_counter() - t0
         current, peak1 = tracemalloc.get_traced_memory()
         tracemalloc.stop()
-        logger.info(f"[{profile} - P1] find_local_attractors_parallel_with_weights -> Memoria Pico: {peak1 / 10**6:.2f} MB")
+        logger.info(f"[{profile} - P1] find_local_attractors_parallel_with_weights -> Peak memory: {peak1 / 10**6:.2f} MB")
 
         tracemalloc.start()
         t0 = time.perf_counter()
@@ -160,7 +160,7 @@ def execute_python_profile(cbn: CBN, profile: str) -> Tuple[float, float, float,
         t_p2 = time.perf_counter() - t0
         current, peak2 = tracemalloc.get_traced_memory()
         tracemalloc.stop()
-        logger.info(f"[{profile} - P2] find_compatible_pairs_parallel_with_weights -> Memoria Pico: {peak2 / 10**6:.2f} MB")
+        logger.info(f"[{profile} - P2] find_compatible_pairs_parallel_with_weights -> Peak memory: {peak2 / 10**6:.2f} MB")
 
         tracemalloc.start()
         t0 = time.perf_counter()
@@ -168,14 +168,14 @@ def execute_python_profile(cbn: CBN, profile: str) -> Tuple[float, float, float,
         t_p3 = time.perf_counter() - t0
         current, peak3 = tracemalloc.get_traced_memory()
         tracemalloc.stop()
-        logger.info(f"[{profile} - P3] mount_stable_attractor_fields_parallel_chunks -> Memoria Pico: {peak3 / 10**6:.2f} MB")
+        logger.info(f"[{profile} - P3] mount_stable_attractor_fields_parallel_chunks -> Peak memory: {peak3 / 10**6:.2f} MB")
 
     else:
         raise ValueError(f"Unknown python profile: {profile}")
 
     total_t = t_p1 + t_p2 + t_p3
     
-    # Extraer métricas topológicas de la red resuelta
+    # Extract topology metrics from the solved network
     n_attr = cbn.get_n_local_attractors()
     n_pairs = cbn.get_n_pair_attractors()
     n_fields = cbn.get_n_attractor_fields()
@@ -188,14 +188,14 @@ def execute_python_profile(cbn: CBN, profile: str) -> Tuple[float, float, float,
 
     return t_p1, t_p2, t_p3, total_t, mem_p1_kb, mem_p2_kb, mem_p3_kb, mem_total_kb, n_attr, n_pairs, n_fields
 
-# ... [El resto del archivo se mantiene exactamente igual a partir de def execute_cpp_profiles] ...
+# ... [The rest of the file remains unchanged from def execute_cpp_profiles onward] ...
 
 def execute_cpp_profiles(topo_path: Path, exp_dir: Path) -> Dict[str, Tuple[float, float, float, float, float, float, float, float, int, int, int]]:
-    """Ejecuta C++ una vez y extrae las métricas de sus tres estrategias."""
+    """Run C++ once and extract metrics for its three strategies."""
     if not CPP_BINARY.exists():
         raise FileNotFoundError(f"C++ binary not found at: {CPP_BINARY}. Please build it first using 'make build-cpp'.")
 
-    # Comando de ejecución C++
+    # C++ execution command
     cmd = [
         str(CPP_BINARY),
         "--samples", "1",
@@ -203,15 +203,15 @@ def execute_cpp_profiles(topo_path: Path, exp_dir: Path) -> Dict[str, Tuple[floa
         "--dir", str(exp_dir)
     ]
 
-    logger.info(f"Invocando C++ con comando: {' '.join(cmd)}")
+    logger.info(f"Invoking C++ with command: {' '.join(cmd)}")
 
     result = subprocess.run(cmd, capture_output=True, text=True, check=False)
     
-    # --- NUEVO: Capturar el pico máximo de RAM del proceso C++ en Linux ---
+    # --- Capture the C++ process's peak RAM usage on Linux ---
     rusage_children = resource.getrusage(resource.RUSAGE_CHILDREN)
-    # En Linux, ru_maxrss se reporta en Kilobytes (KB), dividimos por 1024 para MB
+    # On Linux, ru_maxrss is reported in kilobytes (KB); divide by 1024 to get MB.
     max_rss_mb = rusage_children.ru_maxrss / 1024.0
-    logger.info(f"[C++ Engine] Memoria Pico (Max RSS del subproceso): {max_rss_mb:.2f} MB")
+    logger.info(f"[C++ Engine] Peak memory (subprocess max RSS): {max_rss_mb:.2f} MB")
     # ----------------------------------------------------------------------
 
     if result.returncode != 0:
@@ -240,7 +240,7 @@ def execute_cpp_profiles(topo_path: Path, exp_dir: Path) -> Dict[str, Tuple[floa
         t_p3 = perf_data.get("step_3_ms", 0.0) / 1000.0
         total_t = perf_data.get("total_ms", 0.0) / 1000.0
 
-        # Extraer métricas de memoria quirúrgica del heap de C++
+        # Extract C++ heap memory metrics
         mem_p1_kb = perf_data.get("mem_p1_kb", 0.0)
         mem_p2_kb = perf_data.get("mem_p2_kb", 0.0)
         mem_p3_kb = perf_data.get("mem_p3_kb", 0.0)
@@ -257,31 +257,31 @@ def execute_cpp_profiles(topo_path: Path, exp_dir: Path) -> Dict[str, Tuple[floa
     return metrics
 
 def run_pipeline(config: Dict[str, Any], sample_id: int, experiment_name: str, output_base: Path, csv_path: Path, fieldnames: List[str]):
-    """Genera la topología base, la guarda, y la procesa con los 4 métodos, escribiendo inmediatamente al CSV."""
+    """Generate and save the base topology, process it with all 4 methods, and write results to CSV immediately."""
     exp_dir = output_base / "data" / experiment_name
     exp_dir.mkdir(parents=True, exist_ok=True)
     
     n_nets = config.get("n_networks", 0)
 
-    # 1. Generar la "Red Maestra" y guardarla
-    logger.info(f"[{experiment_name}] Generando topología base...")
+    # 1. Generate and save the master network
+    logger.info(f"[{experiment_name}] Generating base topology...")
     cbn_base = CBN.generate_from_config(config)
     topo_path = exp_dir / "topology.json"
     cbn_base.to_json(str(topo_path))
 
-    # 2. Ejecutar los perfiles Python sobre copias idénticas.
+    # 2. Run Python profiles on identical copies.
     profiles = ["seq", "par", "weights"]
 
     for profile in profiles:
-        logger.info(f"[{experiment_name}] Ejecutando perfil: {profile.upper()}...")
+        logger.info(f"[{experiment_name}] Running profile: {profile.upper()}...")
         
         try:
-            # Cargar red limpia sin resolver
+            # Load a clean, unsolved network
             cbn_instance = load_identical_cbn(topo_path)
-            # Procesar y medir tiempos y memoria
+            # Process and measure runtime and memory
             tp1, tp2, tp3, total, mp1, mp2, mp3, mtot, n_attr, n_pairs, n_fields = execute_python_profile(cbn_instance, profile)
 
-            # Guardar JSON específico de Python para depuración
+            # Save Python-specific JSON for debugging
             with open(exp_dir / f"fields_{profile}.json", "w") as f:
                 json.dump(cbn_instance.to_json_fields(), f, indent=4)
 
@@ -305,7 +305,7 @@ def run_pipeline(config: Dict[str, Any], sample_id: int, experiment_name: str, o
         except Exception as e:
             logger.error(f"[{experiment_name}] Error en perfil {profile.upper()}: {e}")
             logger.debug(traceback.format_exc())
-            # En caso de error, persistir registro con valores por defecto/error
+            # On error, persist a record with default/error values
             row = {
                 "sample": sample_id,
                 "n_nets": n_nets,
@@ -329,9 +329,9 @@ def run_pipeline(config: Dict[str, Any], sample_id: int, experiment_name: str, o
             row_formatted = {k: (f"{v:.6f}" if isinstance(v, float) else v) for k, v in row.items()}
             writer.writerow(row_formatted)
 
-        logger.info(f"[{experiment_name}] Perfil {profile.upper()} completado y persistido en CSV.")
+        logger.info(f"[{experiment_name}] {profile.upper()} profile completed and saved to CSV.")
 
-    # El ejecutable C++ corre sus tres estrategias en una sola invocación.
+    # The C++ executable runs all three strategies in a single invocation.
     try:
         cpp_metrics = execute_cpp_profiles(topo_path, exp_dir)
         for profile, values in cpp_metrics.items():
@@ -345,9 +345,9 @@ def run_pipeline(config: Dict[str, Any], sample_id: int, experiment_name: str, o
             with open(csv_path, 'a', newline='') as csvfile:
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writerow({k: (f"{v:.6f}" if isinstance(v, float) else v) for k, v in row.items()})
-            logger.info(f"[{experiment_name}] Perfil {profile.upper()} completado y persistido en CSV.")
+            logger.info(f"[{experiment_name}] {profile.upper()} profile completed and saved to CSV.")
     except Exception as e:
-        logger.error(f"[{experiment_name}] Error en perfiles C++: {e}")
+        logger.error(f"[{experiment_name}] Error in C++ profiles: {e}")
 
 def main():
     parser = argparse.ArgumentParser(description="CBN All-in-One Hybrid Benchmark Processor")
@@ -367,42 +367,42 @@ def main():
 
     configs = data if isinstance(data, list) else [data]
 
-    # Asegurar que el directorio de salida existe
+    # Ensure the output directory exists
     output_base.mkdir(parents=True, exist_ok=True)
 
     # --- CONFIGURAR CSV EN TIEMPO REAL ---
     csv_path = output_base / "benchmark_granular_workflow.csv"
     fieldnames = ["sample", "n_nets", "perfil", "t_p1", "t_p2", "t_p3", "total_t", "mem_p1_kb", "mem_p2_kb", "mem_p3_kb", "mem_total_kb", "n_attractors", "n_pairs", "n_fields"]
     
-    # Crear el archivo e inicializar cabeceras si no existe
+    # Create the file and write the header if it does not exist
     if not csv_path.exists():
         with open(csv_path, 'w', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-        logger.info(f"Creado archivo CSV nuevo en: {csv_path}")
+        logger.info(f"Created new CSV file at: {csv_path}")
     else:
-        logger.info(f"Usando archivo CSV existente en: {csv_path} (modo append)")
+        logger.info(f"Using existing CSV file at: {csv_path} (append mode)")
 
-    logger.info(f"Iniciando evaluación híbrida (4-en-1) para {len(configs)} configuraciones...")
+    logger.info(f"Starting hybrid evaluation (4-in-1) for {len(configs)} configurations...")
 
     for i, cfg in enumerate(configs):
         if not validate_config(cfg):
-            logger.warning(f"Saltando configuración inválida en índice {i}")
+            logger.warning(f"Skipping invalid configuration at index {i}")
             continue
 
         sample_id = i + 1
         exp_name = cfg.get("experiment_name", f"exp_{config_path.stem}_{sample_id}")
         
         logger.info(f"\n=========================================")
-        logger.info(f"Procesando muestra {sample_id}/{len(configs)}: {exp_name}")
+        logger.info(f"Processing sample {sample_id}/{len(configs)}: {exp_name}")
         logger.info(f"=========================================")
         
-        # Ejecuta el pipeline completo para la muestra, que corre y escribe los 4 perfiles inmediatamente al CSV
+        # Run the full pipeline for the sample and write all 4 profiles to CSV immediately.
         run_pipeline(cfg, sample_id, exp_name, output_base, csv_path, fieldnames)
 
-        logger.info(f"==> Muestra {sample_id}/{len(configs)} finalizada.")
+        logger.info(f"==> Sample {sample_id}/{len(configs)} completed.")
 
-    logger.info(f"\n¡Benchmark híbrido completado con éxito! Datos finales en: {csv_path}")
+    logger.info(f"\nHybrid benchmark completed successfully. Final data: {csv_path}")
 
 if __name__ == "__main__":
     main()

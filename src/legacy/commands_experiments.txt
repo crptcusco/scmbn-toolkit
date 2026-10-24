@@ -1,20 +1,20 @@
-# Active the virtual Environment 
+# Activate the virtual environment
 source .venv/bin/activate
 
-# Comands for Linear Experiment
+# Commands for the linear experiment
 
 python main_gerador.py --output linear.json --name linear_100 --networks 10 --topology 4 --vars 6 --inputs 2 --outputs 2 --density 0.5 --coupling OR --seed 42 --samples 100
 python main_processor_py_cpp.py --config linear.json --output exp_linear_100
 
-# Commands for Circular Experiment
+# Commands for the circular experiment
 
 python main_gerador.py --output circular.json --name circular_100 --networks 10 --topology 3 --vars 6 --inputs 2 --outputs 2 --density 0.5 --coupling OR --seed 42 --samples 100
 python main_processor_py_cpp.py --config circular.json --output exp_circular_100
 
-# Active the virtual Environment 
+# Activate the virtual environment
 source .venv/bin/activate
 
-# Commands for aletory-fixed experiment
+# Commands for the aleatory-fixed experiment
 python main_gerador.py --output aleatory_fixed.json --name aleatory_fixed_100 --networks 10 --topology 2 --vars 6 --inputs 2 --outputs 2 --density 0.5 --coupling OR --seed 42 --samples 100
 python main_processor_py_cpp.py --config aleatory_fixed.json --output exp_aleatory_fixed_100
 

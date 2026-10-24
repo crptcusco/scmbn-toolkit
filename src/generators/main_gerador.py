@@ -12,31 +12,31 @@ def validar_esquema(config: Dict[str, Any]) -> bool:
     ]
     missing_keys = [key for key in required_keys if key not in config]
     if missing_keys:
-        print(f"Error: Faltan las siguientes llaves en la configuración: {missing_keys}")
+        print(f"Error: The following configuration keys are missing: {missing_keys}")
         return False
     return True
 
 def main():
-    parser = argparse.ArgumentParser(description="Generador de configuraciones CBN (Source of Truth)")
+    parser = argparse.ArgumentParser(description="CBN configuration generator (source of truth)")
     
-    # Argumentos de Archivo y Mapeo estadístico
-    parser.add_argument("--output", type=str, default="config.json", help="Ruta del archivo de salida")
-    parser.add_argument("--name", type=str, default="exp_custom", help="Nombre del experimento")
-    parser.add_argument("--samples", type=int, default=1, help="Número de muestras independientes a generar")
+    # File and statistical mapping arguments
+    parser.add_argument("--output", type=str, default="config.json", help="Output file path")
+    parser.add_argument("--name", type=str, default="exp_custom", help="Experiment name")
+    parser.add_argument("--samples", type=int, default=1, help="Number of independent samples to generate")
     
-    # Argumentos Topológicos y Dinámicos
-    parser.add_argument("--networks", type=int, default=4, help="Número de redes (n_networks)")
-    parser.add_argument("--topology", type=int, default=4, help="Tipo de topología (v_topology)")
-    parser.add_argument("--vars", type=int, default=6, help="Variables por red (n_var_network)")
-    parser.add_argument("--inputs", type=int, default=2, help="Variables de entrada (n_input_variables)")
-    parser.add_argument("--outputs", type=int, default=2, help="Variables de salida (n_output_variables)")
-    parser.add_argument("--density", type=float, default=0.3, help="Densidad de conectividad (connectivity_density)")
-    parser.add_argument("--coupling", type=str, default="NONE", choices=["NONE", "OR", "XOR", "AND", "IDENTITY"], help="Tipo de acoplamiento")
-    parser.add_argument("--seed", type=int, default=42, help="Semilla aleatoria base")
-    parser.add_argument("--variable-names", type=str, default=None, help="Lista de nombres de variables separados por coma")
+    # Topology and dynamics arguments
+    parser.add_argument("--networks", type=int, default=4, help="Number of networks (n_networks)")
+    parser.add_argument("--topology", type=int, default=4, help="Topology type (v_topology)")
+    parser.add_argument("--vars", type=int, default=6, help="Variables per network (n_var_network)")
+    parser.add_argument("--inputs", type=int, default=2, help="Input variables (n_input_variables)")
+    parser.add_argument("--outputs", type=int, default=2, help="Output variables (n_output_variables)")
+    parser.add_argument("--density", type=float, default=0.3, help="Connectivity density (connectivity_density)")
+    parser.add_argument("--coupling", type=str, default="NONE", choices=["NONE", "OR", "XOR", "AND", "IDENTITY"], help="Coupling type")
+    parser.add_argument("--seed", type=int, default=42, help="Base random seed")
+    parser.add_argument("--variable-names", type=str, default=None, help="Comma-separated variable names")
     
-    # Argumento para modo batch predefinido
-    parser.add_argument("--batch", action="store_true", help="Generar un batch automático de exploración")
+    # Predefined batch mode argument
+    parser.add_argument("--batch", action="store_true", help="Generate an automatic exploration batch")
 
     args = parser.parse_args()
 
@@ -47,7 +47,7 @@ def main():
         var_names = [name.strip() for name in args.variable_names.split(",")]
     
     if args.batch:
-        # Modo batch: ignora los argumentos individuales y crea la malla de exploración
+        # Batch mode ignores individual arguments and creates an exploration grid
         tipos_acoplamiento = ["NONE", "XOR", "OR"]
         num_vars = [5, 6, 7]
         for acoplamiento in tipos_acoplamiento:
@@ -73,7 +73,7 @@ def main():
                     "variable_names": v_names
                 })
     else:
-        # Modo Custom: Genera N muestras distribuidas estadísticamente
+        # Custom mode generates N statistically distributed samples
         for i in range(1, args.samples + 1):
             v_names = var_names
             if v_names is None:
@@ -92,11 +92,11 @@ def main():
                 "n_output_variables": args.outputs,
                 "connectivity_density": args.density,
                 "coupling_type": args.coupling,
-                "seed": args.seed + i,  # Desplazamiento de semilla por muestra
+                "seed": args.seed + i,  # Offset the seed for each sample
                 "variable_names": v_names
             })
 
-    # Validar
+    # Validate
     for cfg in configs:
         if not validar_esquema(cfg):
             sys.exit(1)
@@ -107,7 +107,7 @@ def main():
     with open(output_path, "w") as f:
         json.dump(configs, f, indent=4)
 
-    print(f"Configuración generada exitosamente en {output_path} ({len(configs)} experimentos/muestras)")
+    print(f"Configuration generated successfully at {output_path} ({len(configs)} experiments/samples)")
 
 if __name__ == "__main__":
     main()
