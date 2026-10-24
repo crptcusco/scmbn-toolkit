@@ -1,0 +1,2 @@
+sample_id,run_name,topology,n_networks,n_vars,p1_ms,p2_ms,p3_ms,max_rss_kb,fields
+1,ParallelPipeline,3,12,10,24552913.2317,6.1563,7.5177,688136,0

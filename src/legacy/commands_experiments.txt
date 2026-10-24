@@ -1,0 +1,25 @@
+# Active the virtual Environment 
+source .venv/bin/activate
+
+# Comands for Linear Experiment
+
+python main_gerador.py --output linear.json --name linear_100 --networks 10 --topology 4 --vars 6 --inputs 2 --outputs 2 --density 0.5 --coupling OR --seed 42 --samples 100
+python main_processor_py_cpp.py --config linear.json --output exp_linear_100
+
+# Commands for Circular Experiment
+
+python main_gerador.py --output circular.json --name circular_100 --networks 10 --topology 3 --vars 6 --inputs 2 --outputs 2 --density 0.5 --coupling OR --seed 42 --samples 100
+python main_processor_py_cpp.py --config circular.json --output exp_circular_100
+
+# Active the virtual Environment 
+source .venv/bin/activate
+
+# Commands for aletory-fixed experiment
+python main_gerador.py --output aleatory_fixed.json --name aleatory_fixed_100 --networks 10 --topology 2 --vars 6 --inputs 2 --outputs 2 --density 0.5 --coupling OR --seed 42 --samples 100
+python main_processor_py_cpp.py --config aleatory_fixed.json --output exp_aleatory_fixed_100
+
+python main_gerador.py --output aleatory_fixed_2_8_5_2_1000.json --name aleatory_fixed_2_8_5_2_1000 --topology 2 --networks 8 --vars 5 --inputs 2 --outputs 2 --density 0.5 --coupling OR --seed 42 --samples 1000
+python main_processor_py_cpp.py --config aleatory_fixed_2_8_5_2_1000.json --output exp_aleatory_fixed_2_8_5_2_1000
+
+python main_gerador.py --output aleatory_fixed_2_16_5_2_1000.json --name aleatory_fixed_2_16_5_2_1000 --topology 2 --networks 16 --vars 5 --inputs 2 --outputs 2 --density 0.5 --coupling OR --seed 42 --samples 1000
+python main_processor_py_cpp.py --config aleatory_fixed_2_16_5_2_1000.json --output exp_aleatory_fixed_2_16_5_2_1000
