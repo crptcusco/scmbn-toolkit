@@ -1,0 +1,3 @@
+[submodule "lib/scmbn-core"]
+	path = lib/scmbn-core
+	url = https://github.com/crptcusco/scmbn-core.git
